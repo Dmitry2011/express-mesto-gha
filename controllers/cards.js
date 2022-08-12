@@ -37,7 +37,7 @@ module.exports.getCards = (req, res) => {
   // Удаление карточки
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
-  Card.findById(cardId)
+  Card.findByIdAndRemove(cardId)
     .orFail(() => {
       throw new NotFound();
     })
