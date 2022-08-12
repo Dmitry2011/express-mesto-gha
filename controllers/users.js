@@ -1,6 +1,7 @@
 const User = require('../models/user');
+const NotFound = require('../errors/error');
 const {
-  ErrorValid, ErrorNotFound, Сreated, errorNotRecognized,
+  ErrorValid, Сreated, ErrorNotFound, errorNotRecognized,
 } = require('../errors/status');
 
   // создание нового пользователя
@@ -31,19 +32,22 @@ module.exports.getUsers = (req, res) => {
   // получение пользователя по его id
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
+    .orFail(() => {
+      throw new NotFound();
+    })
     .then((user) => {
-      if (!user) {
+      res.status(Сreated).send({ user });
+    })
+    .catch((err) => {
+      if (err.name === 'NotFound') {
         res.status(ErrorNotFound).send({
-          message: 'Пользователь не найден.',
+          message: 'Пользователь по указанному _id не найден.',
         });
       } else {
-        res.status(Сreated).send(user);
-      }
-    })
-    .catch(() => {
         res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
-      });
-  };
+      }
+    });
+};
 
   // обновление информации о пользователе
 module.exports.updateUser = (req, res) => {
