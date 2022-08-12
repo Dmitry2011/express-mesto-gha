@@ -1,4 +1,5 @@
 const Card = require('../models/card');
+const NotFound = require('../errors/error');
 const {
   ErrorValid, ErrorNotFound, Сreated, errorNotRecognized,
 } = require('../errors/status');
@@ -34,21 +35,25 @@ module.exports.getCards = (req, res) => {
 };
 
   // Удаление карточки
-module.exports.deleteCard = (req, res, next) => {
+module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
   Card.findById(cardId)
-    .then((card) => {
-      if (!card) {
-        res.status(ErrorNotFound).send({
-          message: 'Карточка с указанным _id не найдена.',
-        });
-      }
-      Card.findByIdAndRemove(cardId)
-        .then((deletedCard) => res.status(Сreated).send(deletedCard))
-        .catch(next);
+    .orFail(() => {
+      throw new NotFound();
     })
-    .catch(() => {
-      res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
+    .then((card) => res.send({ data: card }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(ErrorValid).send({
+          message: 'Переданы некорректные данные.',
+        });
+      } else if (err.name === 'NotFound') {
+        res.status(ErrorNotFound).send({
+          message: 'Карточка с указанным id не найдена.',
+        });
+      } else {
+        res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
+      }
     });
 };
 
@@ -59,6 +64,9 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+  .orFail(() => {
+    throw new NotFound();
+  })
   .then((card) => res.status(Сreated).send(card))
   .catch((err) => {
     if (err.name === 'CastError') {
@@ -67,7 +75,7 @@ module.exports.likeCard = (req, res) => {
       });
     } else if (err.name === 'NotFound') {
       res.status(ErrorNotFound).send({
-        message: 'Передан несуществующий _id карточки.',
+        message: 'Передан несуществующий id карточки.',
       });
     } else {
       res.status(errorNotRecognized).send({ message: 'Произошла ошибка.' });
@@ -82,6 +90,9 @@ module.exports.dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+  .orFail(() => {
+    throw new NotFound();
+  })
   .then((card) => res.status(Сreated).send(card))
   .catch((err) => {
     if (err.name === 'CastError') {
@@ -90,7 +101,7 @@ module.exports.dislikeCard = (req, res) => {
       });
     } else if (err.name === 'NotFound') {
       res.status(ErrorNotFound).send({
-        message: 'Передан несуществующий _id карточки.',
+        message: 'Передан несуществующий id карточки.',
       });
     } else {
       res.status(errorNotRecognized).send({ message: 'Произошла ошибка.' });

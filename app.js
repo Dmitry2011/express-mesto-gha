@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const users = require('./routes/users');
 const cardRouter = require('./routes/cards');
+const { ErrorNotFound } = require('./errors/status');
 
   // слушаем порт 3000
 const { PORT = 3000 } = process.env;
@@ -29,6 +30,11 @@ app.use((req, res, next) => {
 
 app.use('/', users);
 app.use('/', cardRouter);
+app.use('*', (req, res) => {
+  res.status(ErrorNotFound).send({
+    message: 'Страница не найдена',
+  });
+});
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
