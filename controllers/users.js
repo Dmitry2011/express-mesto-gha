@@ -1,42 +1,42 @@
 const User = require('../models/user');
 const NotFound = require('../errors/error');
 const {
-  ErrorValid, Сreated, ErrorNotFound, errorNotRecognized,
+  ErrorValid, ErrorNotFound, errorNotRecognized,
 } = require('../errors/status');
 
-  // создание нового пользователя
+// создание нового пользователя
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-  .then((user) => res.status(Сreated).send({
-    user,
-  }))
-  .catch((err) => {
-    if (err.name === 'ValidationError') {
-      res.status(ErrorValid).send({
-        message: 'Переданы некорректные данные при создании пользователя.',
-      });
-    } else {
-      res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
-    }
-});
+    .then((user) => res.send({
+      user,
+    }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(ErrorValid).send({
+          message: 'Переданы некорректные данные при создании пользователя.',
+        });
+      } else {
+        res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
-  // получение пользователей
+// получение пользователей
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(Сreated).send(users))
+    .then((users) => res.send(users))
     .catch(() => res.status(errorNotRecognized).send({ message: 'Произошла ошибка' }));
 };
 
-  // получение пользователя по его id
+// получение пользователя по его id
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
     .orFail(() => {
       throw new NotFound();
     })
     .then((user) => {
-      res.status(Сreated).send({ user });
+      res.send({ user });
     })
     .catch((err) => {
       if (err.name === 'NotFound') {
@@ -47,13 +47,13 @@ module.exports.getUserById = (req, res) => {
         res.status(ErrorValid).send({
           message: 'Задан не некорректный id.',
         });
-        } else {
+      } else {
         res.status(errorNotRecognized).send({ message: 'Произошла ошибка' });
       }
     });
 };
 
-  // обновление информации о пользователе
+// обновление информации о пользователе
 module.exports.updateUser = (req, res) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
@@ -61,7 +61,7 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(Сreated).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ErrorValid).send({
@@ -73,7 +73,7 @@ module.exports.updateUser = (req, res) => {
     });
 };
 
-  // обновление аватара пользователя
+// обновление аватара пользователя
 module.exports.updateAvatar = (req, res) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(
@@ -81,7 +81,7 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true, runValidators: true },
   )
-    .then((user) => res.status(Сreated).send(user))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(ErrorValid).send({
