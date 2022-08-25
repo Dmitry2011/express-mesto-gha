@@ -1,7 +1,9 @@
+const { ErrorNotFound } = require('./status');
+
 class NotFound extends Error {
-  constructor() {
-    super();
-    this.name = this.constructor.name;
+  constructor(message) {
+    super(message);
+    this.statusCode = ErrorNotFound;
   }
 }
 
