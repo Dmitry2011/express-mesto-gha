@@ -2,9 +2,6 @@ const Card = require('../models/card');
 const NotFound = require('../errors/error');
 const ForbiddenError = require('../errors/error');
 const BadRequestError = require('../errors/badRequestError');
-const {
-  ErrorValid, ErrorNotFound, ErrorNotRecognized,
-} = require('../errors/status');
 
 // Создание новой карточки
 module.exports.createCard = (req, res, next) => {
