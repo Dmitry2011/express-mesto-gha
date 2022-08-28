@@ -31,10 +31,10 @@ module.exports.deleteCard = (req, res, next) => {
   const { cardId } = req.params;
   const { _id } = req.user;
   Card.findById(cardId)
+    .orFail(() => {
+      throw new NotFound('Карточка не найдена.');
+    })
     .then((card) => {
-      if (!card) {
-        throw new NotFound('Карточка не найдена.');
-      }
       if (card.owner.valueOf() !== _id) {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
