@@ -46,53 +46,41 @@ module.exports.deleteCard = (req, res, next) => {
 };
 
 // Поставить лайк
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      throw new NotFound();
+      throw new NotFound('Передан несуществующий id карточки.');
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ErrorValid).send({
-          message: 'Переданы некорректные данные для постановки лайка.',
-        });
-      } else if (err.name === 'NotFound') {
-        res.status(ErrorNotFound).send({
-          message: 'Передан несуществующий id карточки.',
-        });
+        throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
       } else {
-        res.status(ErrorNotRecognized).send({ message: 'Произошла ошибка.' });
+        next(err);
       }
     });
 };
 
 // Удалить лайк
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      throw new NotFound();
+      throw new NotFound('Передан несуществующий id карточки.');
     })
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(ErrorValid).send({
-          message: 'Переданы некорректные данные для постановки лайка.',
-        });
-      } else if (err.name === 'NotFound') {
-        res.status(ErrorNotFound).send({
-          message: 'Передан несуществующий id карточки.',
-        });
+        throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
       } else {
-        res.status(ErrorNotRecognized).send({ message: 'Произошла ошибка.' });
+        next(err);
       }
     });
 };
