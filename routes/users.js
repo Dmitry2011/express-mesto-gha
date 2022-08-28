@@ -27,6 +27,10 @@ router.patch('/users/me', celebrate({
 }), updateUser);
 
 // обновляет аватар
-router.patch('/users/me/avatar', updateAvatar);
+router.patch('/users/me/avatar', celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().regex(/https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\w\w(\/[1-90a-z.,_@%&?+=~/-]{1,}\/?)?#?/i),
+  }),
+}), updateAvatar);
 
 module.exports = router;
