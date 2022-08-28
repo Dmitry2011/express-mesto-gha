@@ -19,13 +19,9 @@ router.get('/users/:userId', celebrate({
 }), getUserById);
 
 // обновляет профиль
-router.patch('/me', updateUser);
+router.patch('/users/me', updateUser);
 
 // обновляет аватар
-router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().regex(/https?:\/\/(\w{3}\.)?[1-9a-z\-.]{1,}\w\w(\/[1-90a-z.,_@%&?+=~/-]{1,}\/?)?#?/i),
-  }),
-}), updateAvatar);
+router.patch('/users/me/avatar', updateAvatar);
 
 module.exports = router;
