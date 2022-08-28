@@ -20,14 +20,10 @@ module.exports.createCard = (req, res, next) => {
 };
 
 // Получение карточек
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => {
-      res.status(ErrorNotRecognized).send({
-        message: 'Произошла ошибка',
-      });
-    });
+    .catch(next);
 };
 
 // Удаление карточки
@@ -39,7 +35,7 @@ module.exports.deleteCard = (req, res, next) => {
       if (!card) {
         throw new NotFound('Карточка с указанным id не найдена.');
       }
-      if (card.owner.valueOf() !== _id) {
+      if (card.owner.toString() !== _id) {
         throw new ForbiddenError('Нельзя удалить чужую карточку!');
       }
       Card.findByIdAndRemove(cardId)
