@@ -19,12 +19,7 @@ router.get('/users/:userId', celebrate({
 }), getUserById);
 
 // обновляет профиль
-router.patch('/me', celebrate({
-  params: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-  }),
-}), updateUser);
+router.patch('/me', updateUser);
 
 // обновляет аватар
 router.patch('/me/avatar', celebrate({
