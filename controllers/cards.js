@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const NotFound = require('../errors/error');
-const ForbiddenError = require('../errors/error');
+const ForbiddenError = require('../errors/forbiddenError');
 const BadRequestError = require('../errors/badRequestError');
 
 // Создание новой карточки
