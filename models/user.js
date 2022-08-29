@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const validator = require('validator');
 const BadRequestError = require('../errors/badRequestError');
 const AuthorizedError = require('../errors/authorizedError');
+const { regularExpression } = require('../errors/regularExpression');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -25,7 +26,7 @@ const userSchema = new mongoose.Schema({
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
       validator(value) {
-        return /https?:\/\/(w{3}\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/i.test(value);
+        return regularExpression.test(value);
       },
     },
   },

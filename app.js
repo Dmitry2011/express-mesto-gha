@@ -6,6 +6,7 @@ const users = require('./routes/users');
 const cardRouter = require('./routes/cards');
 const NotFound = require('./errors/error');
 const ErrorNotRecognized = require('./errors/status');
+const { regularExpression } = require('./errors/regularExpression');
 
 const { createUser, login } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -30,7 +31,7 @@ app.post('/signup', celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/https?:\/\/(w{3}\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/i),
+    avatar: Joi.string().regex(regularExpression),
     email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),

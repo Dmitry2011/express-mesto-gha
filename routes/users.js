@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
+const { regularExpression } = require('../errors/regularExpression');
 
 const {
   getUsers, getUserById, updateUser, updateAvatar, getCurrentUser,
@@ -29,7 +30,7 @@ router.patch('/users/me', celebrate({
 // обновляет аватар
 router.patch('/users/me/avatar', celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().regex(/https?:\/\/(w{3}\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/i),
+    avatar: Joi.string().regex(regularExpression),
   }),
 }), updateAvatar);
 
