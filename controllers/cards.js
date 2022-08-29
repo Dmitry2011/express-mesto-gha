@@ -55,7 +55,7 @@ module.exports.likeCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
+        next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
       } else {
         next(err);
       }
@@ -75,7 +75,7 @@ module.exports.dislikeCard = (req, res, next) => {
     .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'CastError') {
-        throw new BadRequestError('Переданы некорректные данные для постановки лайка.');
+        next(new BadRequestError('Переданы некорректные данные для постановки лайка.'));
       } else {
         next(err);
       }

@@ -8,19 +8,10 @@ const ConflictError = require('../errors/conflictError');
 // создание нового пользователя
 module.exports.createUser = (req, res, next) => {
   const {
-    email, password,
+    email,
   } = req.body;
-
-  // проверка, существует ли такой же email
-  return User.findOne({ email }).then((user) => {
-    if (user) {
-      next(new ConflictError(`Пользователь ${email} уже существует.`));
-    }
-
     // хешируем пароль
-    return bcrypt.hash(password, 10);
-  })
-
+  bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       email,
       password: hash,
@@ -36,8 +27,10 @@ module.exports.createUser = (req, res, next) => {
       email: user.email,
     }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequestError('Введены не корректные данные.'));
+      if (err.code === 11000) {
+        return next(new ConflictError(`Пользователь ${email} уже существует.`));
+      } if (err.name === 'ValidationError') {
+        return next(new BadRequestError('Введены не корректные данные.'));
       }
       return next(err);
     });
@@ -48,9 +41,6 @@ module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      if (!user || !password) {
-        return next(new BadRequestError('Неверный email или пароль.'));
-      }
       const token = jwt.sign(
         { _id: user._id },
         'some-secret-key',
